@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'login.dart';
-import 'signup.dart';
-import 'welcome.dart';
-import 'providers/auth_provider.dart';
+import 'features/auth/login/pages/login_page.dart';
+import 'features/auth/login/providers/login_provider.dart';
+import 'features/auth/signup/pages/signup_page.dart';
+import 'features/auth/signup/providers/signup_provider.dart';
+import 'features/welcome/pages/welcome_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,8 +15,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => AuthProvider(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => LoginProvider()),
+        ChangeNotifierProvider(create: (_) => SignupProvider()),
+      ],
       child: MaterialApp(
         title: 'TarimProjemiz',
         debugShowCheckedModeBanner: false,
@@ -26,7 +30,7 @@ class MyApp extends StatelessWidget {
         initialRoute: '/login',
         routes: {
           '/login': (context) => const LoginPage(),
-          '/signup': (context) => const SignUpPage(),
+          '/signup': (context) => const SignupPage(),
           '/welcome': (context) => const WelcomePage(),
         },
       ),

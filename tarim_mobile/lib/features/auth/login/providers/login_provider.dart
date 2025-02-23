@@ -1,10 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../services/auth_service.dart';
-import '../models/login_response.dart';
+import '../services/login_service.dart';
+import '../models/login_response_model.dart';
 
-class AuthProvider with ChangeNotifier {
-  final AuthService _authService = AuthService();
+class LoginProvider with ChangeNotifier {
+  final LoginService _loginService = LoginService();
   bool _isLoading = false;
   String? _token;
   String? _error;
@@ -19,7 +19,7 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await _authService.login(email, password);
+      final response = await _loginService.login(email, password);
       
       if (response.isSuccess) {
         _token = response.data?.token.token;

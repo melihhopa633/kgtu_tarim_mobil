@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
-import 'providers/auth_provider.dart';
+import '../providers/login_provider.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -20,7 +20,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     final isWide = MediaQuery.of(context).size.width > 600;
     final primaryColor = Colors.green.shade700;
-    final authProvider = Provider.of<AuthProvider>(context);
+    final authProvider = Provider.of<LoginProvider>(context);
 
     return Scaffold(
       body: Stack(
