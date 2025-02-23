@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/material.dart';
+import '../../../../core/exceptions/api_exception.dart';
 import '../services/login_service.dart';
 import '../models/login_response_model.dart';
 
@@ -37,12 +39,23 @@ class LoginProvider with ChangeNotifier {
         notifyListeners();
         return false;
       }
+    } on UnauthorizedException catch (e) {
+      _error = 'Email veya şifre hatalı';
+    } on ValidationException catch (e) {
+      _error = e.data?['email']?.first ?? e.data?['password']?.first ?? e.message;
+    } on NetworkException catch (e) {
+      _error = 'İnternet bağlantınızı kontrol edin';
+    } on ServerException catch (e) {
+      _error = 'Sunucu hatası oluştu. Lütfen daha sonra tekrar deneyin';
+    } on ApiException catch (e) {
+      _error = e.message;
     } catch (e) {
-      _error = e.toString();
-      _isLoading = false;
-      notifyListeners();
-      return false;
+      _error = 'Beklenmeyen bir hata oluştu';
     }
+
+    _isLoading = false;
+    notifyListeners();
+    return false;
   }
 
   Future<void> logout() async {

@@ -1,7 +1,8 @@
 import 'package:flutter/foundation.dart';
-import '../models/signup_request_model.dart';
-import '../models/signup_response_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../../../core/exceptions/api_exception.dart';
 import '../services/signup_service.dart';
+import '../models/signup_request_model.dart';
 
 class SignupProvider with ChangeNotifier {
   final SignupService _signupService = SignupService();
@@ -48,16 +49,27 @@ class SignupProvider with ChangeNotifier {
         notifyListeners();
         return true;
       } else {
-        _error = response.message ?? 'Kayıt işlemi başarısız';
+        _error = response.message ?? 'Kayıt başarısız';
         _isLoading = false;
         notifyListeners();
         return false;
       }
+    } on UnauthorizedException catch (e) {
+      _error = e.message;
+    } on ValidationException catch (e) {
+      _error = e.message;
+    } on NetworkException catch (e) {
+      _error = 'İnternet bağlantınızı kontrol edin';
+    } on ServerException catch (e) {
+      _error = 'Sunucu hatası oluştu. Lütfen daha sonra tekrar deneyin';
+    } on ApiException catch (e) {
+      _error = e.message;
     } catch (e) {
-      _error = e.toString();
-      _isLoading = false;
-      notifyListeners();
-      return false;
+      _error = 'Beklenmeyen bir hata oluştu';
     }
+
+    _isLoading = false;
+    notifyListeners();
+    return false;
   }
 }

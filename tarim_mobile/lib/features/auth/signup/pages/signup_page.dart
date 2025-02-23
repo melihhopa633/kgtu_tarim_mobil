@@ -17,7 +17,6 @@ class _SignupPageState extends State<SignupPage> {
   bool _isObscure = true;
   DateTime? _selectedDate;
   
-  // Form fields
   String userName = '';
   String email = '';
   String phoneNumber = '';
@@ -89,7 +88,7 @@ class _SignupPageState extends State<SignupPage> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Text(
-                          "Kayıt Ol",
+                          "Yeni Hesap Oluştur",
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 28,
@@ -97,229 +96,209 @@ class _SignupPageState extends State<SignupPage> {
                             color: primaryColor,
                           ),
                         ),
-                        const SizedBox(height: 8),
-                        const Text(
-                          "Yeni bir hesap oluşturun",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Colors.black54,
-                            fontSize: 16,
-                          ),
-                        ),
+                        const SizedBox(height: 24),
                         if (signupProvider.error != null)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 16),
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            margin: const EdgeInsets.only(bottom: 16),
+                            decoration: BoxDecoration(
+                              color: Colors.red.shade100,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
                             child: Text(
                               signupProvider.error!,
-                              style: const TextStyle(
-                                color: Colors.red,
-                                fontSize: 14,
-                              ),
+                              style: TextStyle(color: Colors.red.shade900),
                               textAlign: TextAlign.center,
                             ),
                           ),
-                        const SizedBox(height: 32),
-                        
-                        // Username field
-                        _buildTextField(
-                          label: "Kullanıcı Adı",
-                          icon: CupertinoIcons.person,
-                          onSaved: (value) => userName = value ?? '',
+                        TextFormField(
+                          decoration: const InputDecoration(
+                            labelText: 'Kullanıcı Adı',
+                            prefixIcon: Icon(Icons.person),
+                          ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return "Lütfen kullanıcı adı giriniz";
+                              return 'Kullanıcı adı gerekli';
                             }
                             return null;
                           },
-                          primaryColor: primaryColor,
+                          onChanged: (value) => userName = value,
                         ),
                         const SizedBox(height: 16),
-
-                        // Email field
-                        _buildTextField(
-                          label: "Email",
-                          icon: CupertinoIcons.mail,
-                          onSaved: (value) => email = value ?? '',
+                        TextFormField(
+                          decoration: const InputDecoration(
+                            labelText: 'E-posta',
+                            prefixIcon: Icon(Icons.email),
+                          ),
+                          keyboardType: TextInputType.emailAddress,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return "Lütfen email giriniz";
+                              return 'E-posta gerekli';
                             }
                             if (!value.contains('@')) {
-                              return "Geçerli bir email adresi giriniz";
+                              return 'Geçerli bir e-posta giriniz';
                             }
                             return null;
                           },
-                          primaryColor: primaryColor,
+                          onChanged: (value) => email = value,
                         ),
                         const SizedBox(height: 16),
-
-                        // Phone number field
-                        _buildTextField(
-                          label: "Telefon Numarası",
-                          icon: CupertinoIcons.phone,
-                          onSaved: (value) => phoneNumber = value ?? '',
+                        TextFormField(
+                          decoration: const InputDecoration(
+                            labelText: 'Telefon',
+                            prefixIcon: Icon(Icons.phone),
+                          ),
+                          keyboardType: TextInputType.phone,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return "Lütfen telefon numarası giriniz";
+                              return 'Telefon numarası gerekli';
                             }
                             return null;
                           },
-                          primaryColor: primaryColor,
+                          onChanged: (value) => phoneNumber = value,
                         ),
                         const SizedBox(height: 16),
-
-                        // Password field
-                        _buildTextField(
-                          label: "Şifre",
-                          icon: CupertinoIcons.lock,
-                          isPassword: true,
-                          onSaved: (value) => password = value ?? '',
+                        TextFormField(
+                          decoration: InputDecoration(
+                            labelText: 'Şifre',
+                            prefixIcon: const Icon(Icons.lock),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _isObscure ? Icons.visibility : Icons.visibility_off,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _isObscure = !_isObscure;
+                                });
+                              },
+                            ),
+                          ),
+                          obscureText: _isObscure,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return "Lütfen şifre giriniz";
+                              return 'Şifre gerekli';
                             }
                             if (value.length < 6) {
-                              return "Şifre en az 6 karakter olmalıdır";
+                              return 'Şifre en az 6 karakter olmalı';
                             }
                             return null;
                           },
-                          primaryColor: primaryColor,
+                          onChanged: (value) => password = value,
                         ),
                         const SizedBox(height: 16),
-
-                        // First name field
-                        _buildTextField(
-                          label: "Ad",
-                          icon: CupertinoIcons.person_alt,
-                          onSaved: (value) => firstName = value ?? '',
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return "Lütfen adınızı giriniz";
-                            }
-                            return null;
-                          },
-                          primaryColor: primaryColor,
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextFormField(
+                                decoration: const InputDecoration(
+                                  labelText: 'Ad',
+                                  prefixIcon: Icon(Icons.person_outline),
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Ad gerekli';
+                                  }
+                                  return null;
+                                },
+                                onChanged: (value) => firstName = value,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: TextFormField(
+                                decoration: const InputDecoration(
+                                  labelText: 'Soyad',
+                                  prefixIcon: Icon(Icons.person_outline),
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Soyad gerekli';
+                                  }
+                                  return null;
+                                },
+                                onChanged: (value) => lastName = value,
+                              ),
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 16),
-
-                        // Last name field
-                        _buildTextField(
-                          label: "Soyad",
-                          icon: CupertinoIcons.person_2,
-                          onSaved: (value) => lastName = value ?? '',
+                        TextFormField(
+                          decoration: const InputDecoration(
+                            labelText: 'TC Kimlik No',
+                            prefixIcon: Icon(Icons.badge),
+                          ),
+                          keyboardType: TextInputType.number,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return "Lütfen soyadınızı giriniz";
-                            }
-                            return null;
-                          },
-                          primaryColor: primaryColor,
-                        ),
-                        const SizedBox(height: 16),
-
-                        // Citizen ID field
-                        _buildTextField(
-                          label: "TC Kimlik No",
-                          icon: CupertinoIcons.number,
-                          onSaved: (value) => citizenId = value ?? '',
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return "Lütfen TC kimlik numaranızı giriniz";
+                              return 'TC Kimlik No gerekli';
                             }
                             if (value.length != 11) {
-                              return "TC kimlik numarası 11 haneli olmalıdır";
+                              return 'TC Kimlik No 11 haneli olmalı';
                             }
                             return null;
                           },
-                          primaryColor: primaryColor,
+                          onChanged: (value) => citizenId = value,
                         ),
                         const SizedBox(height: 16),
-
-                        // Birth date field
                         InkWell(
                           onTap: () => _selectDate(context),
                           child: InputDecorator(
-                            decoration: InputDecoration(
-                              labelText: "Doğum Tarihi",
-                              prefixIcon: Padding(
-                                padding: const EdgeInsets.only(left: 12.0, right: 8.0),
-                                child: Icon(
-                                  CupertinoIcons.calendar,
-                                  color: primaryColor,
-                                  size: 20,
-                                ),
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
+                            decoration: const InputDecoration(
+                              labelText: 'Doğum Tarihi',
+                              prefixIcon: Icon(Icons.calendar_today),
                             ),
                             child: Text(
-                              _selectedDate != null
-                                  ? DateFormat('dd/MM/yyyy').format(_selectedDate!)
-                                  : 'Doğum tarihi seçiniz',
+                              _selectedDate == null
+                                  ? 'Seçiniz'
+                                  : DateFormat('dd.MM.yyyy').format(_selectedDate!),
                             ),
                           ),
                         ),
                         const SizedBox(height: 16),
-
-                        // Birth place field
-                        _buildTextField(
-                          label: "Doğum Yeri",
-                          icon: CupertinoIcons.location,
-                          onSaved: (value) => birthPlace = value ?? '',
+                        TextFormField(
+                          decoration: const InputDecoration(
+                            labelText: 'Doğum Yeri',
+                            prefixIcon: Icon(Icons.location_city),
+                          ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return "Lütfen doğum yerinizi giriniz";
+                              return 'Doğum yeri gerekli';
                             }
                             return null;
                           },
-                          primaryColor: primaryColor,
+                          onChanged: (value) => birthPlace = value,
                         ),
                         const SizedBox(height: 16),
-
-                        // Address field
-                        _buildTextField(
-                          label: "Adres",
-                          icon: CupertinoIcons.home,
-                          onSaved: (value) => fullAddress = value ?? '',
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return "Lütfen adresinizi giriniz";
-                            }
-                            return null;
-                          },
-                          primaryColor: primaryColor,
+                        TextFormField(
+                          decoration: const InputDecoration(
+                            labelText: 'Adres',
+                            prefixIcon: Icon(Icons.home),
+                          ),
                           maxLines: 3,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Adres gerekli';
+                            }
+                            return null;
+                          },
+                          onChanged: (value) => fullAddress = value,
                         ),
-                        const SizedBox(height: 32),
-
-                        // Submit button
+                        const SizedBox(height: 24),
                         ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: primaryColor,
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 24,
-                              vertical: 14,
-                            ),
-                          ),
                           onPressed: signupProvider.isLoading
                               ? null
                               : () async {
-                                  if (_selectedDate == null) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text('Lütfen doğum tarihi seçiniz'),
-                                      ),
-                                    );
-                                    return;
-                                  }
-                                  
                                   if (_formKey.currentState!.validate()) {
-                                    _formKey.currentState!.save();
+                                    if (_selectedDate == null) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text('Lütfen doğum tarihi seçiniz'),
+                                          backgroundColor: Colors.red,
+                                        ),
+                                      );
+                                      return;
+                                    }
+
                                     final success = await signupProvider.signup(
                                       userName: userName,
                                       email: email,
@@ -332,26 +311,32 @@ class _SignupPageState extends State<SignupPage> {
                                       birthPlace: birthPlace,
                                       fullAddress: fullAddress,
                                     );
-                                    
+
                                     if (success && mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text('Kayıt başarılı! Giriş yapabilirsiniz.'),
+                                          backgroundColor: Colors.green,
+                                        ),
+                                      );
                                       Navigator.pushReplacementNamed(context, '/login');
                                     }
                                   }
                                 },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: primaryColor,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
                           child: signupProvider.isLoading
-                              ? const SizedBox(
-                                  height: 20,
-                                  width: 20,
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                    strokeWidth: 2,
-                                  ),
-                                )
+                              ? const CircularProgressIndicator(color: Colors.white)
                               : const Text(
-                                  "Kayıt Ol",
+                                  'Kayıt Ol',
                                   style: TextStyle(
                                     fontSize: 16,
-                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white,
                                   ),
                                 ),
                         ),
@@ -360,12 +345,9 @@ class _SignupPageState extends State<SignupPage> {
                           onPressed: () {
                             Navigator.pushReplacementNamed(context, '/login');
                           },
-                          child: const Text(
-                            "Zaten hesabınız var mı? Giriş yapın",
-                            style: TextStyle(
-                              color: Colors.black87,
-                              fontSize: 14,
-                            ),
+                          child: Text(
+                            'Zaten hesabınız var mı? Giriş yapın',
+                            style: TextStyle(color: primaryColor),
                           ),
                         ),
                       ],
@@ -377,51 +359,6 @@ class _SignupPageState extends State<SignupPage> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildTextField({
-    required String label,
-    required IconData icon,
-    required Function(String?) onSaved,
-    required String? Function(String?) validator,
-    required Color primaryColor,
-    bool isPassword = false,
-    int maxLines = 1,
-  }) {
-    return TextFormField(
-      style: const TextStyle(fontSize: 16),
-      maxLines: maxLines,
-      decoration: InputDecoration(
-        labelText: label,
-        prefixIcon: Padding(
-          padding: const EdgeInsets.only(left: 12.0, right: 8.0),
-          child: Icon(
-            icon,
-            color: primaryColor,
-            size: 20,
-          ),
-        ),
-        suffixIcon: isPassword
-            ? IconButton(
-                icon: Icon(
-                  _isObscure ? Icons.visibility_off : Icons.visibility,
-                  color: Colors.grey,
-                ),
-                onPressed: () {
-                  setState(() {
-                    _isObscure = !_isObscure;
-                  });
-                },
-              )
-            : null,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-      ),
-      obscureText: isPassword && _isObscure,
-      validator: validator,
-      onSaved: onSaved,
     );
   }
 }
