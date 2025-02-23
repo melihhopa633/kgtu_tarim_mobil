@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:provider/provider.dart';
+import 'providers/auth_provider.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -12,16 +14,17 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   String email = '';
   String sifre = '';
+  bool _isObscure = true;
 
   @override
   Widget build(BuildContext context) {
     final isWide = MediaQuery.of(context).size.width > 600;
     final primaryColor = Colors.green.shade700;
+    final authProvider = Provider.of<AuthProvider>(context);
 
     return Scaffold(
       body: Stack(
         children: [
-          // Arka plan resmi
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
@@ -30,7 +33,6 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
           ),
-          // Şeffaf katman
           Container(
             color: Colors.black.withOpacity(0.4),
           ),
@@ -77,6 +79,18 @@ class _LoginPageState extends State<LoginPage> {
                             fontSize: 16,
                           ),
                         ),
+                        if (authProvider.error != null)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 16),
+                            child: Text(
+                              authProvider.error!,
+                              style: const TextStyle(
+                                color: Colors.red,
+                                fontSize: 14,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
                         const SizedBox(height: 32),
                         TextFormField(
                           style: const TextStyle(fontSize: 16),
@@ -118,6 +132,9 @@ class _LoginPageState extends State<LoginPage> {
                             if (value == null || value.isEmpty) {
                               return "Lütfen email adresinizi giriniz.";
                             }
+                            if (!value.contains('@')) {
+                              return "Geçerli bir email adresi giriniz.";
+                            }
                             return null;
                           },
                           onSaved: (value) => email = value ?? '',
@@ -135,6 +152,17 @@ class _LoginPageState extends State<LoginPage> {
                                 color: primaryColor,
                                 size: 20,
                               ),
+                            ),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _isObscure ? Icons.visibility_off : Icons.visibility,
+                                color: Colors.grey,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _isObscure = !_isObscure;
+                                });
+                              },
                             ),
                             prefixIconConstraints: const BoxConstraints(
                               minWidth: 40,
@@ -159,7 +187,7 @@ class _LoginPageState extends State<LoginPage> {
                               borderSide: BorderSide(color: primaryColor),
                             ),
                           ),
-                          obscureText: true,
+                          obscureText: _isObscure,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return "Lütfen şifrenizi giriniz.";
@@ -181,19 +209,33 @@ class _LoginPageState extends State<LoginPage> {
                               vertical: 14,
                             ),
                           ),
-                          onPressed: () {
-                            if (_formKey.currentState!.validate()) {
-                              _formKey.currentState!.save();
-                              Navigator.pushReplacementNamed(context, '/welcome');
-                            }
-                          },
-                          child: const Text(
-                            "Giriş Yap",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
+                          onPressed: authProvider.isLoading
+                              ? null
+                              : () async {
+                                  if (_formKey.currentState!.validate()) {
+                                    _formKey.currentState!.save();
+                                    final success = await authProvider.login(email, sifre);
+                                    if (success && mounted) {
+                                      Navigator.pushReplacementNamed(context, '/welcome');
+                                    }
+                                  }
+                                },
+                          child: authProvider.isLoading
+                              ? const SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : const Text(
+                                  "Giriş Yap",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
                         ),
                         const SizedBox(height: 16),
                         TextButton(
